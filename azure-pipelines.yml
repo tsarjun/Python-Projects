@@ -9,7 +9,7 @@ variables:
 
 steps:
 
-# 1️⃣ Use Python
+# 1️⃣ Use Python version
 - task: UsePythonVersion@0
   inputs:
     versionSpec: '$(pythonVersion)'
@@ -22,27 +22,26 @@ steps:
     pip install pytest pytest-cov
   displayName: 'Install dependencies'
 
-# ✅ 3️⃣ FIX HERE (Replace your test step)
+# 3️⃣ Run tests with coverage
 - script: |
-    pytest . --cov=. --cov-report=xml || true
+    pytest --cov=. --cov-report=xml
   displayName: 'Run Tests'
 
-# 🔍 (Optional but recommended - DEBUG)
-- script: |
-    ls -l
-    cat coverage.xml || echo "coverage.xml not found"
-  displayName: 'Check Coverage File'
+# 4️⃣ Prepare SonarQube Analysis
+- task: SonarQubePrepare@8
+  inputs:
+    SonarQube: 'sonar-connection'
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: '${sonar-python}'
+    cliProjectName: 'spring-petclinic'
+    cliSources: '.'
 
-# 4️⃣ SonarQube Scan (CLI)
-- script: |
-    wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1-linux.zip
-    unzip sonar-scanner-cli-*.zip
-    export PATH=$PATH:$(pwd)/sonar-scanner-*/bin
+# 5️⃣ Run SonarQube Scan
+- task: SonarQubeAnalyze@8
 
-    sonar-scanner \
-      -Dsonar.projectKey=python-project \
-      -Dsonar.sources=. \
-      -Dsonar.host.url=http://<your-sonar-ip>:9000 \
-      -Dsonar.login=$(SONAR_TOKEN) \
-      -Dsonar.python.coverage.reportPaths=coverage.xml
-  displayName: 'Run Sonar Scanner'
+
+# 6️⃣ Publish SonarQube Result (Quality Gate)
+- task: SonarQubePublish@8
+  inputs:
+    pollingTimeoutSec: '300'
