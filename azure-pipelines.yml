@@ -44,9 +44,6 @@ steps:
     cliProjectKey: 'python-project'
     cliProjectName: 'python-project'
     cliSources: '.'
-    extraProperties: |
-      sonar.python.coverage.reportPaths=coverage.xml
-      sonar.verbose=true
 
 # 6️⃣ Analyze
 - task: SonarQubeAnalyze@8
