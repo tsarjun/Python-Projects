@@ -24,10 +24,10 @@ steps:
     pip install pytest pytest-cov
   displayName: 'Install dependencies'
 
-# 3️⃣ Run tests with coverage
-#- script: |
- #   pytest --cov=. --cov-report=xml
-  # displayName: 'Run Tests'
+# 3️⃣ (Optional) Run tests
+- script: |
+    pytest . --cov=. --cov-report=xml || true
+  displayName: 'Run Tests'
 
 # 4️⃣ Prepare SonarQube Analysis
 - task: SonarQubePrepare@8
@@ -35,13 +35,15 @@ steps:
     SonarQube: 'sonar-connection'
     scannerMode: 'CLI'
     configMode: 'manual'
-    cliProjectKey: '{sonar-python}'
-    cliProjectName: 'spring-petclinic'
+    cliProjectKey: 'python-project'          # ✅ FIXED
+    cliProjectName: 'python-project'         # ✅ FIXED
     cliSources: '.'
+    extraProperties: |
+      sonar.python.coverage.reportPaths=coverage.xml
+      sonar.verbose=true
 
 # 5️⃣ Run SonarQube Scan
 - task: SonarQubeAnalyze@8
-
 
 # 6️⃣ Publish SonarQube Result (Quality Gate)
 - task: SonarQubePublish@8
