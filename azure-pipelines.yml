@@ -5,7 +5,9 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  pythonVersion: '3.9'
+- group: sonar-key
+- name: pythonVersion
+  value: '3.9'
 
 steps:
 
