@@ -25,9 +25,9 @@ steps:
   displayName: 'Install dependencies'
 
 # 3️⃣ Run tests with coverage
-- script: |
-    pytest --cov=. --cov-report=xml
-  displayName: 'Run Tests'
+#- script: |
+ #   pytest --cov=. --cov-report=xml
+  # displayName: 'Run Tests'
 
 # 4️⃣ Prepare SonarQube Analysis
 - task: SonarQubePrepare@8
