@@ -11,45 +11,47 @@ variables:
 
 steps:
 
-# 1️⃣ Use Python version
+# 1️⃣ Java (fix scanner issues)
+- task: JavaToolInstaller@0
+  inputs:
+    versionSpec: '17'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
+
+# 2️⃣ Use Python
 - task: UsePythonVersion@0
   inputs:
     versionSpec: '$(pythonVersion)'
     addToPath: true
 
-# 2️⃣ Install dependencies
+# 3️⃣ Install dependencies
 - script: |
     python -m pip install --upgrade pip
-    if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     pip install pytest pytest-cov
   displayName: 'Install dependencies'
 
-# 3️⃣ (Optional) Run tests
+# 4️⃣ Run tests
 - script: |
     pytest . --cov=. --cov-report=xml || true
   displayName: 'Run Tests'
 
-# 4️⃣ Prepare SonarQube Analysis
+# 5️⃣ Prepare SonarQube
 - task: SonarQubePrepare@8
   inputs:
     SonarQube: 'sonar-connection'
     scannerMode: 'CLI'
     configMode: 'manual'
-    cliProjectKey: 'python-project'          # ✅ FIXED
-    cliProjectName: 'python-project'         # ✅ FIXED
+    cliProjectKey: 'python-project'
+    cliProjectName: 'python-project'
     cliSources: '.'
     extraProperties: |
       sonar.python.coverage.reportPaths=coverage.xml
       sonar.verbose=true
 
-# 5️⃣ Run SonarQube Scan
+# 6️⃣ Analyze
 - task: SonarQubeAnalyze@8
 
-# 6️⃣ Publish SonarQube Result (Quality Gate)
+# 7️⃣ Publish
 - task: SonarQubePublish@8
   inputs:
     pollingTimeoutSec: '300'
-
-- script: |
-    curl -I http://<your-sonar-ip>:9000
-  displayName: 'Check SonarQube Connectivity'
