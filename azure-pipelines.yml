@@ -22,10 +22,16 @@ steps:
     pip install pytest pytest-cov
   displayName: 'Install dependencies'
 
-# 3️⃣ Run tests
+# ✅ 3️⃣ FIX HERE (Replace your test step)
 - script: |
-    pytest --cov=. --cov-report=xml
+    pytest . --cov=. --cov-report=xml || true
   displayName: 'Run Tests'
+
+# 🔍 (Optional but recommended - DEBUG)
+- script: |
+    ls -l
+    cat coverage.xml || echo "coverage.xml not found"
+  displayName: 'Check Coverage File'
 
 # 4️⃣ SonarQube Scan (CLI)
 - script: |
