@@ -51,6 +51,8 @@ steps:
 
 # 6️⃣ Analyze
 - task: SonarQubeAnalyze@8
+  inputs:
+    jdkversion: 'JAVA_HOME'
 
 # 7️⃣ Publish
 - task: SonarQubePublish@8
