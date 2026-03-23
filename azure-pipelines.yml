@@ -38,7 +38,7 @@ steps:
 - task: SonarQubePrepare@8
   inputs:
     SonarQube: 'sonar-connection'
-    scannerMode: 'CLI'
+    scannerMode: 'cli'
     configMode: 'manual'
     cliProjectKey: 'python-project'
     cliProjectName: 'python-project'
@@ -49,6 +49,8 @@ steps:
 
 # 6️⃣ Analyze
 - task: SonarQubeAnalyze@8
+  inputs:
+    jdkversion: 'JAVA_HOME_17_X64'
 
 # 7️⃣ Publish Result
 - task: SonarQubePublish@8
