@@ -5,50 +5,45 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-- group: sonar-key
 - name: pythonVersion
   value: '3.9'
 
 steps:
 
-# 1️⃣ Java (fix scanner issues)
 - task: JavaToolInstaller@0
   inputs:
     versionSpec: '17'
     jdkArchitectureOption: 'x64'
     jdkSourceOption: 'PreInstalled'
 
-# 2️⃣ Use Python
 - task: UsePythonVersion@0
   inputs:
     versionSpec: '$(pythonVersion)'
     addToPath: true
 
-# 3️⃣ Install dependencies
 - script: |
     python -m pip install --upgrade pip
-    pip install pytest pytest-cov
+    pip install pytest
   displayName: 'Install dependencies'
 
-# 4️⃣ Run tests
 - script: |
-    pytest . --cov=. --cov-report=xml || true
+    pytest . || true
   displayName: 'Run Tests'
 
-# 5️⃣ Prepare SonarQube
 - task: SonarQubePrepare@8
   inputs:
     SonarQube: 'sonar-connection'
     scannerMode: 'CLI'
     configMode: 'manual'
-    cliProjectKey: $(sonarq-python)
+    cliProjectKey: 'sonarq-python'
     cliProjectName: 'python-project'
     cliSources: '.'
+    extraProperties: |
+      sonar.verbose=true
+      sonar.python.version=3.9
 
-# 6️⃣ Analyze
 - task: SonarQubeAnalyze@8
 
-# 7️⃣ Publish
 - task: SonarQubePublish@8
   inputs:
     pollingTimeoutSec: '300'
