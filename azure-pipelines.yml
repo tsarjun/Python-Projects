@@ -41,7 +41,7 @@ steps:
     SonarQube: 'sonar-connection'
     scannerMode: 'CLI'
     configMode: 'manual'
-    cliProjectKey: ${sonarq-python}
+    cliProjectKey: $(sonarq-python)
     cliProjectName: 'python-project'
     cliSources: '.'
 
