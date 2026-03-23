@@ -49,3 +49,7 @@ steps:
 - task: SonarQubePublish@8
   inputs:
     pollingTimeoutSec: '300'
+
+- script: |
+    curl -I http://<your-sonar-ip>:9000
+  displayName: 'Check SonarQube Connectivity'
