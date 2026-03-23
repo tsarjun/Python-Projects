@@ -35,7 +35,7 @@ steps:
     SonarQube: 'sonar-connection'
     scannerMode: 'CLI'
     configMode: 'manual'
-    cliProjectKey: '${sonar-python}'
+    cliProjectKey: '{sonar-python}'
     cliProjectName: 'spring-petclinic'
     cliSources: '.'
 
