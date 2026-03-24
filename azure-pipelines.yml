@@ -1,49 +1,53 @@
+
 trigger:
-- main
-
-pool:
-  vmImage: 'ubuntu-latest'
-
+  branches:
+    include:
+      - main   # ⚠️ avoid branch issue
 variables:
 - name: pythonVersion
   value: '3.9'
-
+ 
+pool:
+  vmImage: 'ubuntu-latest'
+ 
 steps:
-
-- task: JavaToolInstaller@0
-  inputs:
-    versionSpec: '17'
-    jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'PreInstalled'
-
+ 
+# 1️⃣ Use Python
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '$(pythonVersion)'
-    addToPath: true
-
+    versionSpec: '3.9'
+ 
+# 2️⃣ Install dependencies
 - script: |
     python -m pip install --upgrade pip
-    pip install pytest
+    pip install -r requirements.txt
+    pip install pytest coverage
   displayName: 'Install dependencies'
-
+ 
+# 3️⃣ Run tests + generate coverage.xml
 - script: |
-    pytest . || true
-  displayName: 'Run Tests'
-
+    coverage run -m pytest
+    coverage xml
+  displayName: 'Run tests and generate coverage'
+ 
+# 4️⃣ Prepare SonarQube
 - task: SonarQubePrepare@8
   inputs:
     SonarQube: 'sonar-connection'
     scannerMode: 'CLI'
     configMode: 'manual'
-    cliProjectKey: 'sonarq-python'
+    cliProjectKey: $(sonarq-python)
     cliProjectName: 'python-project'
     cliSources: '.'
     extraProperties: |
+      sonar.python.coverage.reportPaths=coverage.xml
       sonar.verbose=true
-      sonar.python.version=3.9
-
+      sonar.branch.name=   # 🔥 disable branch feature
+ 
+# 5️⃣ Run analysis
 - task: SonarQubeAnalyze@8
-
+ 
+# 6️⃣ Publish results
 - task: SonarQubePublish@8
   inputs:
     pollingTimeoutSec: '300'
